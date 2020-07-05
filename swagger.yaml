@@ -1,0 +1,2216 @@
+openapi: 3.0.0
+info:
+  version: "1.0.0"
+  title: "DNL Ticketing"
+
+servers:
+  - url: '{server}'
+    variables:
+      server:
+        default: http://localhost/v1
+        enum:
+          - http://localhost/v1
+          - http://localhost:5000/v1
+
+paths:
+  
+  /trackingtest:
+    get:
+      tags:
+        - "Tracking Test"
+      summary: "Test"
+      description: "test"
+      parameters:
+        - in: query
+          name: request
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "fulfilled"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrackingListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /requests:
+    get:
+      tags:
+        - "Request"
+      summary: "view all requests"
+      description: "View all request by current authenticated user"
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+          description: filter by service request status, can set to multiple separated by comma
+          default: 'ALL, PENDING'
+      responses:
+        "200":
+          description: "fulfilled"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    post:
+      tags:
+        - "Request"
+      summary: "add request"
+      description: "add request"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestPostRequest"
+      responses:
+        "201":
+          description: "fulfilled"
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: service request id
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /requests/submit:
+    post:
+      tags:
+        - "Request"
+      summary: "submit requests"
+      description: "Submit all requests under drafts"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                requests:
+                  type: array
+                  description: 'Array of service request id'
+                  items:
+                    type: integer
+                date_needed:
+                  type: string
+      responses:
+        "204":
+          description: "fulfilled"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /requests/{id}:
+    get:
+      tags:
+        - "Request"
+      summary: "view request"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          required: true
+      responses:
+        "200":
+          description: "fulfilled"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestGetResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    patch:
+      tags:
+        - "Request"
+      summary: "update request"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RequestPatchRequest"
+      responses:
+        "204":
+          description: "fulfilled"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /tracking:
+    get:
+      tags:
+        - "Tracking"
+      summary: "view request tracking"
+      description: "tracking of request"
+      parameters:
+        - in: query
+          name: request
+          required: true
+          description: service request id
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "fulfilled"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrackingListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    post:
+      tags:
+        - "Tracking"
+      summary: "add request tracking"
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TrackingPostRequest"
+      responses:
+        "201":
+          description: "fulfilled"
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: service request tracking id
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /activities:
+    get:
+      tags:
+        - "Activity"
+      summary: "view all request activities"
+      description: "get activities of request by service request id"
+      parameters:
+        - in: query
+          name: request
+          required: true
+          description: service request id
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "fulfilled"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    post:
+      tags:
+        - "Activity"
+      summary: "add request activity"
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityPostRequest"
+      responses:
+        "201":
+          description: "fulfilled"
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: service request activity id
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+
+  /activities/{id}:
+    get:
+      tags:
+        - "Activity"
+      summary: "view request activity"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            description: service request activity id
+      responses:
+        "200":
+          description: "fulfilled"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActivityGetResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+    patch:
+      tags:
+        - "Activity"
+      summary: "update request activity"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: service request activity id
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActivityPatchRequest"
+      responses:
+        "204":
+          description: "fulfilled"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    delete:
+      tags:
+        - "Activity"
+      summary: "remove request activity"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          description: service request activity id
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: "fulfilled"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /providers:
+    get:
+      tags:
+        - "Provider"
+      summary: "view all service provider"
+      description: ""
+      parameters:
+        - in: query
+          name: company
+          schema:
+            type: integer
+        - in: query
+          name: is_shared
+          schema:
+            type: integer
+            enum: [0,1]
+        - in: query
+          name: is_active
+          schema:
+            type: integer
+            enum: [0,1]
+      responses:
+        "200":
+          description: "fulfilled"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    post:
+      tags:
+        - "Provider"
+      summary: "add service provider"
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProviderPostRequest"
+      responses:
+        "201":
+          description: "fulfilled"
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: service provider id
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /providers/{id}:
+    get:
+      tags:
+        - "Provider"
+      summary: "view service provider"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderGetResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    patch:
+      tags:
+        - "Provider"
+      summary: "update service provider"
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProviderPatchRequest"
+      responses:
+        "204":
+          description: "fulfilled"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    delete:
+      tags:
+        - "Provider"
+      summary: "remove service provider"
+      description: ""
+      responses:
+        "204":
+          description: "fulfilled"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /access:
+    get:
+      tags:
+        - "Access"
+      summary: "view all access level"
+      description: ""
+      parameters:
+        - in: query
+          name: provider
+          description: service provider id
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    post:
+      tags:
+        - "Access"
+      summary: "add access"
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccessPostRequest"
+      responses:
+        "201":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: service provider access id
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /access/{id}:
+    get:
+      tags:
+        - "Access"
+      summary: "view access"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccessGetResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    patch:
+      tags:
+        - "Access"
+      summary: "update access level"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccessPatchRequest"
+      responses:
+        "204":
+          description: fulfilled
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    delete:
+      tags:
+        - "Access"
+      summary: "remove access level"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: fulfilled
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+  
+  /sections:
+    get:
+      tags:
+        - "Section"
+      summary: "view all section"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SectionListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    post:
+      tags:
+        - "Section"
+      summary: "add section"
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SectionPostRequest"
+      responses:
+        "201":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: service provider section id
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /sections/{id}:
+    get:
+      tags:
+        - "Section"
+      summary: "view section"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SectionGetResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    patch:
+      tags:
+        - "Section"
+      summary: "update section"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SectionPatchRequest"
+      responses:
+        "204":
+          description: fulfilled
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    delete:
+      tags:
+        - "Section"
+      summary: "remove section"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: fulfilled
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /users:
+    get:
+      tags:
+        - "User"
+      summary: "view all user"
+      description: ""
+      responses:
+        "200":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    post:
+      tags:
+        - "User"
+      summary: "add user"
+      description: ""
+      responses:
+        "201":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPostRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /users/{id}:
+    get:
+      tags:
+        - "User"
+      summary: "view user"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserGetResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    patch:
+      tags:
+        - "User"
+      summary: "update user"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPatchRequest"
+      responses:
+        "204":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SectionSchema"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    delete:
+      tags:
+        - "User"
+      summary: "remove user"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: fulfilled
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /services:
+    get:
+      tags:
+        - "Service"
+      summary: "view all requests"
+      description: "get all service types"
+      responses:
+        "200":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    post:
+      tags:
+        - "Service"
+      summary: "add service"
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServicePostRequest"
+      responses:
+        "201":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: service type id
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /services/{id}:
+    get:
+      tags:
+        - "Service"
+      summary: "view service"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: service type id
+      responses:
+        "200":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceGetResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    patch:
+      tags:
+        - "Service"
+      summary: "update service"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: service type id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServicePatchRequest"
+      responses:
+        "204":
+          description: fulfilled
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    delete:
+      tags:
+        - "Service"
+      summary: "remove service"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: parameters id
+      responses:
+        "204":
+          description: fulfilled
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /categories:
+    get:
+      tags:
+        - "Category"
+      summary: "view all categories"
+      description: ""
+      parameters:
+        - in: query
+          name: service
+          required: true
+          schema:
+            type: integer
+          description: "service type id"
+        - in: query
+          name: is_active
+          schema:
+            type: integer
+            enum: [0, 1]
+      responses:
+        "200":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryListResponse"
+                  
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    post:
+      tags:
+        - "Category"
+      summary: "add service category"
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryPostRequest"
+
+      responses:
+        "201":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: service category id
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /categories/{id}:
+    get:
+      tags:
+        - "Category"
+      summary: "view service category"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: "service category id"
+      responses:
+        "200":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceGetResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    patch:
+      tags:
+        - "Category"
+      summary: "update service category"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: service category id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryPatchRequest"
+      responses:
+        "204":
+          description: fulfilled
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    delete:
+      tags:
+        - "Category"
+      summary: "remove service category"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: service category id
+      responses:
+        "204":
+          description: fulfilled
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /thirdparties:
+    get:
+      tags:
+        - "Third party provider"
+      summary: "view all third party provider"
+      description: ""
+      responses:
+        "200":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ThirdPartyProviderListResponse"
+                  
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    post:
+      tags:
+        - "Third party provider"
+      summary: "add third party provider"
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ThirdPartyProviderPostRequest"
+
+      responses:
+        "201":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: service provider third party id
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+  /thirdparties/{id}:
+    get:
+      tags:
+        - "Third party provider"
+      summary: "view third party provider"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: third party provider id
+      responses:
+        "200":
+          description: fulfilled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ThirdPartyProviderGetResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    patch:
+      tags:
+        - "Third party provider"
+      summary: "update service category"
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ThirdPartyProviderPatchRequest"
+      responses:
+        "204":
+          description: fulfilled
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+    delete:
+      tags:
+        - "Third party provider"
+      summary: "remove third party provider"
+      description: ""
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: third party provider id
+      responses:
+        "204":
+          description: fulfilled
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/Unexpected"
+
+components:
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # optional, arbitrary value for documentation purposes
+
+  responses:
+
+    BadRequest:
+      description: Client error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+              message:
+                type: array
+                items:
+                  type: string
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+
+
+    Unexpected:
+      description: Unexpected
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+  schemas:
+
+    UserLabel:
+      type: object
+      properties:
+        label:
+          type: string
+          description: 'user fullname'
+        value:
+          type: string
+          description: 'user account id'
+
+    AccessLevelLabel:
+      type: object
+      properties:
+        label:
+          type: string
+          description: 'service provider access level description'
+        value:
+          type: string
+          description: 'service provider access level id'
+
+    CompanyLabel:
+      type: object
+      properties:
+        label:
+          type: string
+          description: 'company name'
+        value:
+          type: integer
+          description: 'comapany id'
+
+    CategoryLabel:
+      type: object
+      properties:
+        label:
+          type: string
+          description: 'Service type category description'
+        value:
+          type: integer
+          description: 'Service type category id'
+
+    ProviderLabel:
+      type: object
+      properties:
+        label:
+          type: string
+          description: 'Service provider name'
+        value:
+          type: integer
+          description: 'Service provider id'
+
+    SectionLabel:
+      type: object
+      properties:
+        label:
+          type: string
+          description: 'Service provider section name'
+        value:
+          type: integer
+          description: 'Service provider section id'
+
+    RequestLabel:
+      type: object
+      properties:
+        label:
+          type: string
+          description: 'Service request status'
+        value:
+          type: integer
+          description: 'Service request id'
+
+    ServiceLabel:
+      type: object
+      properties:
+        label:
+          type: string
+          description: 'Service type description'
+        value:
+          type: integer
+          description: 'Service type id'
+
+
+    RequestListResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          service:
+            $ref: "#/components/schemas/ServiceLabel"
+          category:
+            $ref: "#/components/schemas/CategoryLabel"
+          section:
+            $ref: "#/components/schemas/SectionLabel"
+          request_number:
+            type: string
+          date_needed:
+            type: string
+          status:
+            type: string
+
+    RequestPostRequest:
+      type: object
+      required:
+        - service_id
+        - category_id
+        - section_id
+        - description
+        - date_needed
+      properties:
+        service_id:
+          type: integer
+          description: 'service type id'
+        category_id:
+          type: integer
+          description: 'service type category id'
+        section_id:
+          type: integer
+          description: 'service provider section id'
+        details:
+          type: object
+        attachments:
+          type: string
+
+    RequestGetResponse:
+      allOf:
+        - $ref: "#/components/schemas/RequestPatchRequest"
+        - type: object
+          properties:
+            id:
+              type: integer
+              description: 'Service request id'
+            request_number:
+              type: string
+            requested_by:
+              type: string
+            
+            service:
+              $ref: "#/components/schemas/ServiceLabel"
+            category:
+              $ref: "#/components/schemas/CategoryLabel"
+            section:
+              $ref: "#/components/schemas/SectionLabel"
+
+    RequestPatchRequest:
+      type: object
+      properties:
+        details:
+          type: object
+        description:
+            type: string
+            description: 'Service request description'
+        date_needed:
+          type: string
+        lead_time:
+          type: string
+        date_served:
+          type: string
+        date_acknowledged:
+          type: string
+        status:
+          type: string
+        rate:
+          type: integer
+        comments:
+          type: string
+        attachments:
+          type: string
+
+    TrackingListResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: 'Service request tracking id'
+          status:
+            type: string
+            description: 'Service request tracking status'
+          transact_at:
+            type: string
+            description: 'Service request tracking transact datetime'
+          transact_by:
+            type: string
+            description: person who transact
+          remarks:
+            type: string
+
+    TrackingPostRequest:
+      type: object
+      properties:
+        request:
+          type: integer
+          description: service request id
+        execute_by:
+          type: string
+          description: wap account id
+        status:
+          type: string
+        remarks:
+          type: string
+
+    TrackingPatchRequest:
+      type: object
+      properties:
+        status:
+          type: string
+        remarks:
+          type: string
+    
+    TrackingGetResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        remarks:
+          type: string
+      
+    ActivityListResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          activity:
+            type: string
+            description: service request activity
+          created_by:
+            $ref: "#/components/schemas/UserLabel"
+          date_created:
+            type: string
+            description: service request create_datetime field
+
+    ActivityGetResponse:
+      type: object
+      properties:
+        activity:
+          type: string
+        start_date:
+          type: string
+        end_date:
+          type: string
+        created_by:
+          $ref: "#/components/schemas/UserLabel"
+        attachments:
+          type: string
+
+    ActivityPostRequest:
+      type: object
+      required:
+        - request
+        - activity
+        - start_date
+        - end_date
+        - created_by
+        - modified_by
+      properties:
+        request:
+          type: integer
+          description: service request id
+        activity:
+          type: string
+        start_date:
+          type: string
+        end_date:
+          type: string
+        created_by:
+          type: string
+        modified_by:
+          type: string
+        attachments:
+          type: string
+
+    ActivityPatchRequest:
+      type: object
+      properties:
+        request:
+          type: integer
+          description: service request id
+        activity:
+          type: string
+        start_date:
+          type: string
+        end_date:
+          type: string
+        created_by:
+          type: string
+        modified_by:
+          type: string
+        attachments:
+          type: string
+
+    ProviderListResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          company:
+            $ref: "#/components/schemas/CompanyLabel"
+          name:
+            type: string
+            description: service provider name
+          alias:
+            type: string
+            description: service provider alias
+    
+    ProviderGetResponse:
+      type: object
+      properties:
+        company:
+          $ref: "#/components/schemas/CompanyLabel"
+        name:
+          type: string
+          description: service provider name
+        alias:
+          type: string
+          description: service provider alias
+        is_shared:
+          type: integer
+        is_active:
+          type: integer
+        is_deleted:
+          type: integer
+
+    ProviderPostRequest:
+      type: object
+      properties:
+        company:
+          type: integer
+        name:
+          type: string
+          description: service provider name
+        alias:
+          type: string
+          description: service provider alias
+
+    ProviderPatchRequest:
+      type: object
+      properties:
+        company:
+          type: integer
+        name:
+          type: string
+          description: service provider name
+        alias:
+          type: string
+          description: service provider alias
+        is_shared:
+          type: integer
+          enum: [0,1]
+        is_active:
+          type: integer
+          enum: [0,1]
+        is_deleted:
+          type: integer
+          enum: [0,1]
+        
+    AccessListResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          provider:
+            $ref: "#/components/schemas/ProviderLabel"
+          description:
+            type: string
+
+    AccessGetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        provider:
+          $ref: "#/components/schemas/ProviderLabel"
+        description:
+          type: string
+        level:
+          type: integer
+        is_active:
+          type: integer
+        is_deleted:
+          type: integer
+    
+    AccessPostRequest:
+      type: object
+      properties:
+        provider:
+          type: integer
+          description: service provider id
+        description:
+          type: string
+        level:
+          type: integer
+
+    AccessPatchRequest:
+      type: object
+      properties:
+        provider:
+          type: integer
+          description: service provider id
+        description:
+          type: string
+        level:
+          type: integer
+        is_active:
+          type: integer
+        is_deleted:
+          type: integer
+
+    SectionListResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+          provider:
+            $ref: "#/components/schemas/ProviderLabel"
+          parent:
+            type: integer
+            description: service provider section field
+          name:
+            type: string
+          alias:
+            type: string
+
+    SectionGetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        provider:
+          $ref: "#/components/schemas/ProviderLabel"
+        parent:
+          type: integer
+          description: service provider section id
+        level:
+          type: integer
+        name:
+          type: string
+        alias:
+          type: string
+        is_active:
+          type: integer
+        is_deleted:
+          type: integer
+
+    SectionPostRequest:
+      type: object
+      required:
+        - provider
+        - parent
+        - level
+        - name
+      properties:
+        provider:
+          type: integer
+          description: service provider id
+        parent:
+          type: integer
+          description: service provider section id
+        level:
+          type: integer
+        name:
+          type: string
+        alias:
+          type: string
+
+    SectionPatchRequest:
+      type: object
+      properties:
+        provider:
+          type: integer
+          description: service provider id
+        parent:
+          type: integer
+          description: service provider section id
+        level:
+          type: integer
+        name:
+          type: string
+        alias:
+          type: string
+        is_active:
+          type: integer
+        is_deleted:
+          type: integer
+
+    UserListResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          user:
+            $ref: "#/components/schemas/UserLabel"
+    
+    UserGetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        user:
+          $ref: "#/components/schemas/UserLabel"
+        level:
+          $ref: "#/components/schemas/AccessLevelLabel"
+        section:
+          $ref: "#/components/schemas/SectionLabel"
+        is_active:
+          type: integer
+        is_deleted:
+          type: integer
+
+    UserPostRequest:
+      type: object
+      properties:
+        user:
+          type: string
+          description: user account id
+        level:
+          type: integer
+          description: service provider access level id
+        section:
+          type: integer
+          description: service provider section id
+
+    UserPatchRequest:
+      type: object
+      properties:
+        user:
+          type: string
+          description: user account id
+        level:
+          type: integer
+          description: service provider access level id
+        section:
+          type: integer
+          description: service provider section id
+        is_active:
+          type: integer
+        is_deleted:
+          type: integer
+
+    ServiceListResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: service type id
+          provider:
+            $ref: "#/components/schemas/ProviderLabel"
+          description:
+            type: string
+            description: service provider description
+          alias:
+            type: string
+
+    ServiceGetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: service type id
+        provider:
+          $ref: "#/components/schemas/ProviderLabel"
+        description:
+          type: string
+          description: service type description
+        alias:
+          type: string
+        details:
+          type: object
+        is_active:
+          type: integer
+        is_deleted:
+          type: integer
+
+    ServicePostRequest:
+      type: object
+      required:
+        - provider
+        - description
+      properties:
+        provider:
+          type: integer
+          description: service provider id
+        description:
+          type: string
+          description: service type description
+        alias:
+          type: string
+        details:
+          type: object
+        is_active:
+          type: integer
+        is_deleted:
+          type: integer
+
+    ServicePatchRequest:
+      type: object
+      properties:
+        provider:
+          type: integer
+          description: service provider id
+        description:
+          type: string
+          description: service type description
+        alias:
+          type: string
+        details:
+          type: object
+        is_active:
+          type: integer
+        is_deleted:
+          type: integer
+
+    CategoryListResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: service category id
+          service:
+            $ref: "#/components/schemas/ServiceLabel"
+          parent:
+            type: integer
+            description: service category id
+          description:
+            type: string
+          alias:
+            type: description
+
+    CategoryGetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        service:
+          $ref: "#/components/schemas/ServiceLabel"
+        parent:
+          type: integer
+          description: service category id
+        description:
+          type: string
+        alias:
+          type: string
+
+    CategoryPostRequest:
+      type: object
+      requred:
+        - service
+        - parent
+        - description
+        - details
+      properties:
+        service:
+          type: integer
+          description: service type id
+        parent:
+          type: integer
+          description: service category id
+        description:
+          type: string
+        alias:
+          type: string
+        detatils:
+          type: object
+
+    CategoryPatchRequest:
+      type: object
+      properties:
+        service:
+          type: integer
+          description: service type id
+        parent:
+          type: integer
+          description: service category id
+        description:
+          type: string
+        alias:
+          type: string
+        detatils:
+          type: object
+        is_active:
+          type: integer
+        is_deleted:
+          type: integer
+
+    ThirdPartyProviderListResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: service provider third party id
+          provider:
+            $ref: "#/components/schemas/ProviderLabel"
+          section:
+            $ref: "#/components/schemas/SectionLabel"
+          name:
+            type: string
+          alias:
+            type: string
+
+    ThirdPartyProviderGetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: service provider third party id
+        provider:
+          $ref: "#/components/schemas/ProviderLabel"
+        section:
+          $ref: "#/components/schemas/SectionLabel"
+        name:
+          type: string
+        alias:
+          type: string
+        is_active:
+          type: integer
+        is_deleted:
+          type: integer
+
+    ThirdPartyProviderPostRequest:
+      type: object
+      required:
+        - provider
+        - section
+        - name
+      properties:
+        provider:
+          type: integer
+          description: service provider id
+        section:
+          type: integer
+          description: service provider section id
+        name:
+          type: string
+        alias:
+          type: string
+
+    ThirdPartyProviderPatchRequest:
+      type: object
+      properties:
+        provider:
+          type: integer
+          description: service provider id
+        section:
+          type: integer
+          description: service provider section id
+        name:
+          type: string
+        alias:
+          type: string
+        is_active:
+          type: integer
+        is_deleted:
+          type: integer
+        
+
+
+security:
+  - bearerAuth: []

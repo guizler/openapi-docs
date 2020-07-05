@@ -1,0 +1,18 @@
+{
+  "name": "api-docs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "author": "John Rey Soriano <jmsoriano@dnl.com.ph>",
+  "dependencies": {
+    "express": "^4.17.1",
+    "swagger-ui-express": "^4.1.4",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "scripts": {
+    "start": "nodemon -e yaml swagger.js"
+  }
+}
